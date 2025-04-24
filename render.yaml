@@ -1,8 +1,10 @@
 services:
   - type: web
-    name: ayusai-gorge-flask
+    name: ayusai-gorge-project
     env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python app.py"
-    plan: free
-    region: kz
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+    autoDeploy: true
