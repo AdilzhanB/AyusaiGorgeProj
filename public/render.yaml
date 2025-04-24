@@ -1,7 +1,0 @@
-services:
-  - type: static
-    name: ayusai-gorge-static
-    env: static
-    buildCommand: "echo 'No build needed for static site'"
-    publishDirectory: "./"  # Change this to the directory where your index.html is located
-    plan: free  # You can select 'free', 'starter', or a paid plan based on your needs
