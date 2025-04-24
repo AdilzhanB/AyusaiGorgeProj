@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayusai Gorge Research Project</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="#" class="logo">
+                <i class="fas fa-mountain"></i>
+                Ayusai Gorge Research
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#map-section" class="nav-link">Interactive Map</a></li>
+                <li><a href="#stats-section" class="nav-link">Statistics</a></li>
+                <li><a href="#comparison-section" class="nav-link">Before & After</a></li>
+                <li><a href="#ecotracker-section" class="nav-link">EcoTracker</a></li>
+                <li><a href="#blog-section" class="nav-link">Research Blog</a></li>
+                <li><a href="#learning-section" class="nav-link">Eco-Learning</a></li>
+            </ul>
+
+            <div class="nav-controls">
+                <button class="dark-toggle" id="dark-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <select class="language-toggle" id="language-toggle">
+                    <option value="en">English</option>
+                    <option value="kz">Қазақша</option>
+                    <option value="ru">Русский</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <video class="hero-video" autoplay muted loop>
+            <source src="/api/placeholder/1920/1080" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Ayusai Gorge Research Project</h1>
+            <p class="hero-subtitle">Documenting and preserving the natural beauty and ecological balance of Kazakhstan's Ayusai Gorge</p>
+            <a href="#map-section" class="hero-btn">Explore the Map <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </section>
+
+    <!-- Interactive Map Section -->
+    <section id="map-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Interactive Map</h2>
+            </div>
+            <p class="section-subtitle">Explore the natural and anthropogenic changes in Ayusai Gorge. Click on markers to view details about each location.</p>
+
+            <div class="map-controls">
+                <button class="map-control-btn active" data-filter="all">All Changes</button>
+                <button class="map-control-btn" data-filter="natural">Natural Changes</button>
+                <button class="map-control-btn" data-filter="anthropogenic">Human Impact</button>
+                <button class="map-control-btn" data-filter="2020">2020-Present</button>
+                <button class="map-control-btn" data-filter="2015">2015-2019</button>
+                <button class="map-control-btn" data-filter="2010">2010-2014</button>
+            </div>
+
+            <div id="map"></div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section id="stats-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Statistics & Trends</h2>
+            </div>
+            <p class="section-subtitle">Analyzing the data collected over the years to understand the patterns and impact of changes in the Ayusai Gorge.</p>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Impact Types Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="impactChart"></canvas>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>Changes Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="timelineChart"></canvas>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>Most Affected Areas</h3>
+                    <div class="chart-container">
+                        <canvas id="areasChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Before & After Section -->
+<section id="comparison-section" style="background-color: #f0f5f4; padding: 60px 0;">
+  <div class="container">
+    <div class="section-title">
+      <h2>Before & After Gallery</h2>
+    </div>
+    <p class="section-subtitle">
+      Visual evidence of how human activities are negatively impacting the Ayusai Gorge. Drag the sliders to compare the pristine past and the present degradation.
+    </p>
+
+    <!-- Comparison 1: Forest Degradation -->
+    <div class="comparison-slider" id="comparison-slider-1">
+      <div class="comparison-item before" style="background-image: url('https://www.flickr.com/photos/anurgaliyev/52847830492/download')"></div>
+      <div class="comparison-item after" style="background-image: url('https://www.alamy.com/stock-photo-second-waterfall-in-gorge-ayu-say-tien-shan-mountains-kazakstan-41852476.html')"></div>
+      <div class="comparison-slider-handle" id="slider-handle-1"></div>
+      <div class="comparison-label before">Before (2012)</div>
+      <div class="comparison-label after">After (Pollution Impact)</div>
+    </div>
+
+    <!-- Comparison 2: Erosion from Hiking Trails -->
+    <div class="comparison-slider" id="comparison-slider-2">
+      <div class="comparison-item before" style="background-image: url('https://www.shutterstock.com/ru/image-photo/ayusai-waterfall-2-bear-gorge-almaty-2264712783')"></div>
+      <div class="comparison-item after" style="background-image: url('https://www.google.com/imgres?q=%D0%90%D1%8E%D1%81%D0%B0%D0%B9%20%D1%8D%D1%80%D0%BE%D0%B7%D0%B8%D1%8F&imgurl=https%3A%2F%2Fkaztag.kz%2Fupload%2Fiblock%2F07d%2FSnimok-ekrana-2024_05_14-v-19.44.39.png%3F1715698068530125&imgrefurl=https%3A%2F%2Fkaztag.kz%2Fru%2Fnews%2Fvblizi-plotiny-ayusay-v-almatinskoy-oblasti-obvalilas-doroga&docid=_Y5rUcajYwoydM&tbnid=N_o-yhpW5NH2tM&vet=12ahUKEwig3K7HifGMAxXYU1UIHZliFUQQM3oECBcQAA..i&w=748&h=352&hcb=2&itg=1&ved=2ahUKEwig3K7HifGMAxXYU1UIHZliFUQQM3oECBcQAA')"></div>
+      <div class="comparison-slider-handle" id="slider-handle-2"></div>
+      <div class="comparison-label before">Before (2014)</div>
+      <div class="comparison-label after">After (Erosion Impact)</div>
+    </div>
+
+    <!-- Comparison 3: Water Pollution -->
+    <div class="comparison-slider" id="comparison-slider-3">
+      <div class="comparison-item before" style="background-image: url('https://www.alamy.com/stock-photo-ayusai-gorge-in-tien-shan-almaty-kazakhstan-50036862.html')"></div>
+      <div class="comparison-item after" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Almaty_ayusai_gorge.JPG/1024px-Almaty_ayusai_gorge.JPG')"></div>
+      <div class="comparison-slider-handle" id="slider-handle-3"></div>
+      <div class="comparison-label before">Before (2015)</div>
+      <div class="comparison-label after">After (2024)</div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- EcoTracker Section -->
+<section id="ecotracker-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>EcoTracker</h2>
+        </div>
+        <p class="section-subtitle">Contribute to our research by tracking your hikes and reporting environmental changes or issues you observe.</p>
+
+        <div class="ecotracker-container">
+            <div class="ecotracker-form">
+                <h3>Report Environmental Change</h3>
+                <form id="eco-report-form">
+                    <input type="text" id="report-title" placeholder="Title of your observation" required>
+                    <select id="report-type" required>
+                        <option value="">Select type of observation</option>
+                        <option value="pollution">Pollution</option>
+                        <option value="deforestation">Deforestation</option>
+                        <option value="erosion">Erosion</option>
+                        <option value="wildlife">Wildlife sighting</option>
+                        <option value="vegetation">Vegetation change</option>
+                        <option value="construction">Construction</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <textarea id="report-description" placeholder="Describe what you observed..." rows="5" required></textarea>
+                    <div class="form-row">
+                        <input type="text" id="report-latitude" placeholder="Latitude (e.g., 43.2567)" required>
+                        <input type="text" id="report-longitude" placeholder="Longitude (e.g., 77.0123)" required>
+                    </div>
+                    <input type="date" id="report-date" required>
+                    <input type="file" id="report-image" accept="image/*">
+                    <button type="submit" class="btn">Submit Report</button>
+                </form>
+            </div>
+            <div class="ecotracker-map">
+                <h3>Recent Reports</h3>
+                <div id="recent-reports">
+                    <div class="report-card">
+                        <div class="report-header">
+                            <span class="report-type natural">Erosion</span>
+                            <span class="report-date">April 15, 2025</span>
+                        </div>
+                        <h4>Significant Cliff Collapse</h4>
+                        <p>Natural erosion has caused part of the eastern cliff to collapse. The area should be avoided by hikers.</p>
+                        <div class="report-footer">
+                            <span class="report-location">43.2513, 77.0234</span>
+                            <a href="#" class="report-view">View on Map</a>
+                        </div>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-header">
+                            <span class="report-type anthropogenic">Pollution</span>
+                            <span class="report-date">April 10, 2025</span>
+                        </div>
+                        <h4>Plastic Waste Near the River</h4>
+                        <p>Significant amount of plastic bottles and packaging found near the main river in the central area of the gorge.</p>
+                        <div class="report-footer">
+                            <span class="report-location">43.2498, 77.0187</span>
+                            <a href="#" class="report-view">View on Map</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blog Section -->
+<section id="blog-section" style="background-color: #f0f5f4;">
+    <div class="container">
+        <div class="section-title">
+            <h2>Research Blog</h2>
+        </div>
+        <p class="section-subtitle">Follow our research journey, field notes, and discoveries as we study the Ayusai Gorge ecosystem.</p>
+
+        <div class="blog-grid">
+            <div class="blog-card">
+                <img src="/api/placeholder/400/200?text=Field+Research" alt="Field Research" class="blog-image">
+                <div class="blog-content">
+                    <h3 class="blog-title">Spring 2025 Field Research Findings</h3>
+                    <p class="blog-excerpt">Our team spent two weeks collecting data on vegetation recovery in previously affected areas...</p>
+                    <div class="blog-meta">
+                        <span>April 12, 2025</span>
+                        <span>Dr. Aisha Nurlan</span>
+                    </div>
+                </div>
+            </div>
+            <div class="blog-card">
+                <img src="/api/placeholder/400/200?text=Water+Analysis" alt="Water Analysis" class="blog-image">
+                <div class="blog-content">
+                    <h3 class="blog-title">Water Quality Analysis Results</h3>
+                    <p class="blog-excerpt">The comparative analysis of water samples from three different locations within the gorge revealed...</p>
+                    <div class="blog-meta">
+                        <span>March 28, 2025</span>
+                        <span>Bolat Yerkin</span>
+                    </div>
+                </div>
+            </div>
+            <div class="blog-card">
+                <img src="/api/placeholder/400/200?text=Local+Interviews" alt="Local Interviews" class="blog-image">
+                <div class="blog-content">
+                    <h3 class="blog-title">Interviews with Local Communities</h3>
+                    <p class="blog-excerpt">We spoke with residents who have lived near the Ayusai Gorge for generations to understand historical changes...</p>
+                    <div class="blog-meta">
+                        <span>March 15, 2025</span>
+                        <span>Zhanar Tuleubayeva</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Learning Section -->
+<section id="learning-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Eco-Learning Zone</h2>
+        </div>
+        <p class="section-subtitle">Test your knowledge about the Ayusai Gorge ecosystem and learn about conservation efforts.</p>
+
+        <div class="quiz-container" id="quiz-container">
+            <div id="quiz-question" class="quiz-question">Which of the following is NOT a natural cause of erosion in the Ayusai Gorge?</div>
+            <div class="quiz-options" id="quiz-options">
+                <div class="quiz-option" data-value="1">Rainfall and water runoff</div>
+                <div class="quiz-option" data-value="2">Wind erosion</div>
+                <div class="quiz-option" data-value="3">Tourist hiking trails</div>
+                <div class="quiz-option" data-value="4">Freeze-thaw cycles</div>
+            </div>
+            <div id="quiz-result" class="quiz-result" style="display: none;"></div>
+            <div class="quiz-navigation">
+                <button id="quiz-prev" class="btn" style="background-color: var(--gray);" disabled>Previous</button>
+                <button id="quiz-check" class="btn">Check Answer</button>
+                <button id="quiz-next" class="btn">Next Question</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>About the Project</h3>
+                <p>The Ayusai Gorge Research Project is dedicated to documenting and preserving the natural beauty and ecological balance of this unique Kazakhstan landmark.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="#home">Home</a></li>
+                    <li class="footer-link"><a href="#map-section">Interactive Map</a></li>
+                    <li class="footer-link"><a href="#stats-section">Statistics</a></li>
+                    <li class="footer-link"><a href="#comparison-section">Before & After</a></li>
+                    <li class="footer-link"><a href="#ecotracker-section">EcoTracker</a></li>
+                    <li class="footer-link"><a href="#blog-section">Research Blog</a></li>
+                    <li class="footer-link"><a href="#learning-section">Eco-Learning</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <ul class="footer-links">
+                    <li class="footer-link"><i class="fas fa-envelope"></i> info@ayusairesearch.org</li>
+                    <li class="footer-link"><i class="fas fa-phone"></i> +7(---)(---)(----)</li>
+                    <li class="footer-link"><i class="fas fa-map-marker-alt"></i> NIS CBD Almaty<br>Almaty, Kazakhstan</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Ayusai Gorge Research Project. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Modal -->
+<div class="modal" id="report-modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h2>Report Submitted</h2>
+        <p>Thank you for your contribution! Your environmental report has been submitted successfully and will be reviewed by our team.</p>
+        <button class="btn" id="modal-ok">OK</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
