@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayusai Gorge Research Project</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary: #2a9d8f;
+            --secondary: #264653;
+            --accent: #e76f51;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #76c893;
+            --warning: #ee9b00;
+            --danger: #ae2012;
+            --gray: #6c757d;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        body.dark-mode {
+            background-color: #121212;
+            color: #f8f9fa;
+        }
+
+        .dark-mode .card {
+            background-color: #1e1e1e;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .dark-mode .navbar {
+            background-color: #1e1e1e;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header & Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-link {
+            margin: 0 15px;
+            text-decoration: none;
+            color: var(--secondary);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .dark-mode .nav-link {
+            color: var(--light);
+        }
+
+        .dark-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--dark);
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .dark-mode .dark-toggle {
+            color: var(--light);
+        }
+
+        .language-toggle {
+            margin-left: 15px;
+            background: none;
+            border: 1px solid var(--gray);
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: var(--secondary);
+            transition: var(--transition);
+        }
+
+        .language-toggle:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .dark-mode .language-toggle {
+            color: var(--light);
+            border-color: var(--light);
+        }
+
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 20px;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: fadeInDown 1s;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 1s;
+            animation-delay: 0.3s;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        .hero-btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            animation: fadeIn 1s;
+            animation-delay: 0.6s;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        .hero-btn:hover {
+            background-color: #218376;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Section Styling */
+        section {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+
+        .dark-mode .section-title h2 {
+            color: var(--light);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 3px;
+            background-color: var(--primary);
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto 50px;
+        }
+
+        /* Map Section */
+        #map-section {
+            background-color: #f0f5f4;
+            transition: var(--transition);
+        }
+
+        .dark-mode #map-section {
+            background-color: #1a1a1a;
+        }
+
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .map-controls {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .map-control-btn {
+            background-color: white;
+            border: 1px solid var(--gray);
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .map-control-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .map-control-btn:hover:not(.active) {
+            background-color: #e9ecef;
+        }
+
+        .dark-mode .map-control-btn {
+            background-color: #2a2a2a;
+            color: var(--light);
+            border-color: #444;
+        }
+
+        .dark-mode .map-control-btn:hover:not(.active) {
+            background-color: #333;
+        }
+
+        /* Stats Section */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode .stat-card {
+            background-color: #1e1e1e;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 15px;
+        }
+
+        /* Before & After Section */
+        .comparison-slider {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            margin: 40px auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .comparison-item.before {
+            z-index: 1;
+            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+        }
+
+        .comparison-item.after {
+            z-index: 0;
+        }
+
+        .comparison-slider-handle {
+            position: absolute;
+            width: 4px;
+            height: 100%;
+            top: 0;
+            left: 50%;
+            background-color: white;
+            z-index: 2;
+            cursor: ew-resize;
+        }
+
+        .comparison-slider-handle::before {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .comparison-slider-handle::after {
+            content: '↔';
+            position: absolute;
+            color: var(--primary);
+            font-size: 18px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .comparison-label {
+            position: absolute;
+            bottom: 20px;
+            padding: 8px 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 5px;
+            font-weight: 500;
+            z-index: 3;
+        }
+
+        .comparison-label.before {
+            left: 20px;
+        }
+
+        .comparison-label.after {
+            right: 20px;
+        }
+
+        /* EcoTracker Section */
+        .ecotracker-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .ecotracker-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ecotracker-form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .ecotracker-form {
+            background-color: #1e1e1e;
+        }
+
+        form input, form textarea, form select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .dark-mode form input, .dark-mode form textarea, .dark-mode form select {
+            background-color: #2a2a2a;
+            color: white;
+            border-color: #444;
+        }
+
+        form input:focus, form textarea:focus, form select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.2);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            background-color: #218376;
+            transform: translateY(-3px);
+        }
+
+        /* Blog Section */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .blog-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .dark-mode .blog-card {
+            background-color: #1e1e1e;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .blog-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .blog-content {
+            padding: 20px;
+        }
+
+        .blog-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+
+        .dark-mode .blog-title {
+            color: var(--light);
+        }
+
+        .blog-excerpt {
+            color: var(--gray);
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .blog-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Learning Section */
+        .quiz-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .dark-mode .quiz-container {
+            background-color: #1e1e1e;
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+
+        .dark-mode .quiz-question {
+            color: var(--light);
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .quiz-option {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .dark-mode .quiz-option {
+            background-color: #2a2a2a;
+        }
+
+        .quiz-option:hover {
+            background-color: #e9ecef;
+        }
+
+        .dark-mode .quiz-option:hover {
+            background-color: #333;
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background-color: rgba(118, 200, 147, 0.2);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger);
+            background-color: rgba(174, 32, 18, 0.2);
+        }
+
+        .quiz-result {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        .quiz-result.correct {
+            background-color: rgba(118, 200, 147, 0.2);
+            color: var(--success);
+        }
+
+        .quiz-result.incorrect {
+            background-color: rgba(174, 32, 18, 0.2);
+            color: var(--danger);
+        }
+
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--secondary);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .dark-mode footer {
+            background-color: #0a0a0a;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 2px;
+            background-color: var(--primary);
+            bottom: -10px;
+            left: 0;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-link {
+            margin-bottom: 10px;
+        }
+
+        .footer-link a {
+            color: #ddd;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-link a:hover {
+            color: var(--primary);
+            padding-left: 5px;
+        }
+
+        .footer-social {
+            display: flex;
+            margin-top: 15px;
+        }
+
+        .social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            margin-right: 10px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .social-icon:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .navbar-container {
+                flex-direction: column;
+                padding: 15px 0 5px;
+            }
+
+            .logo {
+                margin-bottom: 15px;
+            }
+
+            .nav-links {
+                margin-bottom: 10px;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .comparison-slider {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-link {
+                margin: 5px 10px;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            section {
+                padding: 60px 0;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .comparison-slider {
+                height: 250px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Marker popup styling */
+        .custom-popup {
+            max-width: 300px;
+        }
+
+        .custom-popup img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .custom-popup h3 {
+            margin-bottom: 5px;
+            color: var(--secondary);
+        }
+
+        .custom-popup p {
+            margin-bottom: 10px;
+            color: var(--gray);
+        }
+
+        .popup-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .popup-tag {
+            background-color: var(--primary);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .popup-tag.natural {
+            background-color: var(--success);
+        }
+
+        .popup-tag.anthropogenic {
+            background-color: var(--warning);
+        }
+
+        .marker-natural {
+            background-color: var(--success);
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .marker-anthropogenic {
+            background-color: var(--warning);
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            padding: 30px;
+            position: relative;
+            animation: fadeIn 0.3s;
+        }
+
+        .dark-mode .modal-content {
+            background-color: #1e1e1e;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        /* Loader */
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="#" class="logo">
+                <i class="fas fa-mountain"></i>
+                Ayusai Gorge Research
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#map-section" class="nav-link">Interactive Map</a></li>
+                <li><a href="#stats-section" class="nav-link">Statistics</a></li>
+                <li><a href="#comparison-section" class="nav-link">Before & After</a></li>
+                <li><a href="#ecotracker-section" class="nav-link">EcoTracker</a></li>
+                <li><a href="#blog-section" class="nav-link">Research Blog</a></li>
+                <li><a href="#learning-section" class="nav-link">Eco-Learning</a></li>
+            </ul>
+
+            <div class="nav-controls">
+                <button class="dark-toggle" id="dark-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <select class="language-toggle" id="language-toggle">
+                    <option value="en">English</option>
+                    <option value="kz">Қазақша</option>
+                    <option value="ru">Русский</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <video class="hero-video" autoplay muted loop>
+            <source src="/api/placeholder/1920/1080" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Ayusai Gorge Research Project</h1>
+            <p class="hero-subtitle">Documenting and preserving the natural beauty and ecological balance of Kazakhstan's Ayusai Gorge</p>
+            <a href="#map-section" class="hero-btn">Explore the Map <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </section>
+
+    <!-- Interactive Map Section -->
+    <section id="map-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Interactive Map</h2>
+            </div>
+            <p class="section-subtitle">Explore the natural and anthropogenic changes in Ayusai Gorge. Click on markers to view details about each location.</p>
+
+            <div class="map-controls">
+                <button class="map-control-btn active" data-filter="all">All Changes</button>
+                <button class="map-control-btn" data-filter="natural">Natural Changes</button>
+                <button class="map-control-btn" data-filter="anthropogenic">Human Impact</button>
+                <button class="map-control-btn" data-filter="2020">2020-Present</button>
+                <button class="map-control-btn" data-filter="2015">2015-2019</button>
+                <button class="map-control-btn" data-filter="2010">2010-2014</button>
+            </div>
+
+            <div id="map"></div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section id="stats-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Statistics & Trends</h2>
+            </div>
+            <p class="section-subtitle">Analyzing the data collected over the years to understand the patterns and impact of changes in the Ayusai Gorge.</p>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Impact Types Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="impactChart"></canvas>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>Changes Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="timelineChart"></canvas>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>Most Affected Areas</h3>
+                    <div class="chart-container">
+                        <canvas id="areasChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Before & After Section -->
+<section id="comparison-section" style="background-color: #f0f5f4; padding: 60px 0;">
+  <div class="container">
+    <div class="section-title">
+      <h2>Before & After Gallery</h2>
+    </div>
+    <p class="section-subtitle">
+      Visual evidence of how human activities are negatively impacting the Ayusai Gorge. Drag the sliders to compare the pristine past and the present degradation.
+    </p>
+
+    <!-- Comparison 1: Forest Degradation -->
+    <div class="comparison-slider" id="comparison-slider-1">
+      <div class="comparison-item before" style="background-image: url('https://www.flickr.com/photos/anurgaliyev/52847830492/download')"></div>
+      <div class="comparison-item after" style="background-image: url('https://www.alamy.com/stock-photo-second-waterfall-in-gorge-ayu-say-tien-shan-mountains-kazakstan-41852476.html')"></div>
+      <div class="comparison-slider-handle" id="slider-handle-1"></div>
+      <div class="comparison-label before">Before (2012)</div>
+      <div class="comparison-label after">After (Pollution Impact)</div>
+    </div>
+
+    <!-- Comparison 2: Erosion from Hiking Trails -->
+    <div class="comparison-slider" id="comparison-slider-2">
+      <div class="comparison-item before" style="background-image: url('https://www.shutterstock.com/ru/image-photo/ayusai-waterfall-2-bear-gorge-almaty-2264712783')"></div>
+      <div class="comparison-item after" style="background-image: url('https://www.google.com/imgres?q=%D0%90%D1%8E%D1%81%D0%B0%D0%B9%20%D1%8D%D1%80%D0%BE%D0%B7%D0%B8%D1%8F&imgurl=https%3A%2F%2Fkaztag.kz%2Fupload%2Fiblock%2F07d%2FSnimok-ekrana-2024_05_14-v-19.44.39.png%3F1715698068530125&imgrefurl=https%3A%2F%2Fkaztag.kz%2Fru%2Fnews%2Fvblizi-plotiny-ayusay-v-almatinskoy-oblasti-obvalilas-doroga&docid=_Y5rUcajYwoydM&tbnid=N_o-yhpW5NH2tM&vet=12ahUKEwig3K7HifGMAxXYU1UIHZliFUQQM3oECBcQAA..i&w=748&h=352&hcb=2&itg=1&ved=2ahUKEwig3K7HifGMAxXYU1UIHZliFUQQM3oECBcQAA')"></div>
+      <div class="comparison-slider-handle" id="slider-handle-2"></div>
+      <div class="comparison-label before">Before (2014)</div>
+      <div class="comparison-label after">After (Erosion Impact)</div>
+    </div>
+
+    <!-- Comparison 3: Water Pollution -->
+    <div class="comparison-slider" id="comparison-slider-3">
+      <div class="comparison-item before" style="background-image: url('https://www.alamy.com/stock-photo-ayusai-gorge-in-tien-shan-almaty-kazakhstan-50036862.html')"></div>
+      <div class="comparison-item after" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Almaty_ayusai_gorge.JPG/1024px-Almaty_ayusai_gorge.JPG')"></div>
+      <div class="comparison-slider-handle" id="slider-handle-3"></div>
+      <div class="comparison-label before">Before (2015)</div>
+      <div class="comparison-label after">After (2024)</div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- EcoTracker Section -->
+<section id="ecotracker-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>EcoTracker</h2>
+        </div>
+        <p class="section-subtitle">Contribute to our research by tracking your hikes and reporting environmental changes or issues you observe.</p>
+
+        <div class="ecotracker-container">
+            <div class="ecotracker-form">
+                <h3>Report Environmental Change</h3>
+                <form id="eco-report-form">
+                    <input type="text" id="report-title" placeholder="Title of your observation" required>
+                    <select id="report-type" required>
+                        <option value="">Select type of observation</option>
+                        <option value="pollution">Pollution</option>
+                        <option value="deforestation">Deforestation</option>
+                        <option value="erosion">Erosion</option>
+                        <option value="wildlife">Wildlife sighting</option>
+                        <option value="vegetation">Vegetation change</option>
+                        <option value="construction">Construction</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <textarea id="report-description" placeholder="Describe what you observed..." rows="5" required></textarea>
+                    <div class="form-row">
+                        <input type="text" id="report-latitude" placeholder="Latitude (e.g., 43.2567)" required>
+                        <input type="text" id="report-longitude" placeholder="Longitude (e.g., 77.0123)" required>
+                    </div>
+                    <input type="date" id="report-date" required>
+                    <input type="file" id="report-image" accept="image/*">
+                    <button type="submit" class="btn">Submit Report</button>
+                </form>
+            </div>
+            <div class="ecotracker-map">
+                <h3>Recent Reports</h3>
+                <div id="recent-reports">
+                    <div class="report-card">
+                        <div class="report-header">
+                            <span class="report-type natural">Erosion</span>
+                            <span class="report-date">April 15, 2025</span>
+                        </div>
+                        <h4>Significant Cliff Collapse</h4>
+                        <p>Natural erosion has caused part of the eastern cliff to collapse. The area should be avoided by hikers.</p>
+                        <div class="report-footer">
+                            <span class="report-location">43.2513, 77.0234</span>
+                            <a href="#" class="report-view">View on Map</a>
+                        </div>
+                    </div>
+                    <div class="report-card">
+                        <div class="report-header">
+                            <span class="report-type anthropogenic">Pollution</span>
+                            <span class="report-date">April 10, 2025</span>
+                        </div>
+                        <h4>Plastic Waste Near the River</h4>
+                        <p>Significant amount of plastic bottles and packaging found near the main river in the central area of the gorge.</p>
+                        <div class="report-footer">
+                            <span class="report-location">43.2498, 77.0187</span>
+                            <a href="#" class="report-view">View on Map</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blog Section -->
+<section id="blog-section" style="background-color: #f0f5f4;">
+    <div class="container">
+        <div class="section-title">
+            <h2>Research Blog</h2>
+        </div>
+        <p class="section-subtitle">Follow our research journey, field notes, and discoveries as we study the Ayusai Gorge ecosystem.</p>
+
+        <div class="blog-grid">
+            <div class="blog-card">
+                <img src="/api/placeholder/400/200?text=Field+Research" alt="Field Research" class="blog-image">
+                <div class="blog-content">
+                    <h3 class="blog-title">Spring 2025 Field Research Findings</h3>
+                    <p class="blog-excerpt">Our team spent two weeks collecting data on vegetation recovery in previously affected areas...</p>
+                    <div class="blog-meta">
+                        <span>April 12, 2025</span>
+                        <span>Dr. Aisha Nurlan</span>
+                    </div>
+                </div>
+            </div>
+            <div class="blog-card">
+                <img src="/api/placeholder/400/200?text=Water+Analysis" alt="Water Analysis" class="blog-image">
+                <div class="blog-content">
+                    <h3 class="blog-title">Water Quality Analysis Results</h3>
+                    <p class="blog-excerpt">The comparative analysis of water samples from three different locations within the gorge revealed...</p>
+                    <div class="blog-meta">
+                        <span>March 28, 2025</span>
+                        <span>Bolat Yerkin</span>
+                    </div>
+                </div>
+            </div>
+            <div class="blog-card">
+                <img src="/api/placeholder/400/200?text=Local+Interviews" alt="Local Interviews" class="blog-image">
+                <div class="blog-content">
+                    <h3 class="blog-title">Interviews with Local Communities</h3>
+                    <p class="blog-excerpt">We spoke with residents who have lived near the Ayusai Gorge for generations to understand historical changes...</p>
+                    <div class="blog-meta">
+                        <span>March 15, 2025</span>
+                        <span>Zhanar Tuleubayeva</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Learning Section -->
+<section id="learning-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Eco-Learning Zone</h2>
+        </div>
+        <p class="section-subtitle">Test your knowledge about the Ayusai Gorge ecosystem and learn about conservation efforts.</p>
+
+        <div class="quiz-container" id="quiz-container">
+            <div id="quiz-question" class="quiz-question">Which of the following is NOT a natural cause of erosion in the Ayusai Gorge?</div>
+            <div class="quiz-options" id="quiz-options">
+                <div class="quiz-option" data-value="1">Rainfall and water runoff</div>
+                <div class="quiz-option" data-value="2">Wind erosion</div>
+                <div class="quiz-option" data-value="3">Tourist hiking trails</div>
+                <div class="quiz-option" data-value="4">Freeze-thaw cycles</div>
+            </div>
+            <div id="quiz-result" class="quiz-result" style="display: none;"></div>
+            <div class="quiz-navigation">
+                <button id="quiz-prev" class="btn" style="background-color: var(--gray);" disabled>Previous</button>
+                <button id="quiz-check" class="btn">Check Answer</button>
+                <button id="quiz-next" class="btn">Next Question</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>About the Project</h3>
+                <p>The Ayusai Gorge Research Project is dedicated to documenting and preserving the natural beauty and ecological balance of this unique Kazakhstan landmark.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="#home">Home</a></li>
+                    <li class="footer-link"><a href="#map-section">Interactive Map</a></li>
+                    <li class="footer-link"><a href="#stats-section">Statistics</a></li>
+                    <li class="footer-link"><a href="#comparison-section">Before & After</a></li>
+                    <li class="footer-link"><a href="#ecotracker-section">EcoTracker</a></li>
+                    <li class="footer-link"><a href="#blog-section">Research Blog</a></li>
+                    <li class="footer-link"><a href="#learning-section">Eco-Learning</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <ul class="footer-links">
+                    <li class="footer-link"><i class="fas fa-envelope"></i> info@ayusairesearch.org</li>
+                    <li class="footer-link"><i class="fas fa-phone"></i> +7(---)(---)(----)</li>
+                    <li class="footer-link"><i class="fas fa-map-marker-alt"></i> NIS CBD Almaty<br>Almaty, Kazakhstan</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Ayusai Gorge Research Project. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Modal -->
+<div class="modal" id="report-modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h2>Report Submitted</h2>
+        <p>Thank you for your contribution! Your environmental report has been submitted successfully and will be reviewed by our team.</p>
+        <button class="btn" id="modal-ok">OK</button>
+    </div>
+</div>
+
+<script>
+    // Document ready function
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize map
+        initMap();
+        
+        // Initialize charts
+        initCharts();
+        
+        // Initialize comparison sliders
+        initComparisonSliders();
+        
+        // Initialize the quiz
+        initQuiz();
+        
+        // Dark mode toggle
+        const darkToggle = document.getElementById('dark-toggle');
+        const darkIcon = darkToggle.querySelector('i');
+        
+        darkToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                darkIcon.classList.remove('fa-moon');
+                darkIcon.classList.add('fa-sun');
+            } else {
+                darkIcon.classList.remove('fa-sun');
+                darkIcon.classList.add('fa-moon');
+            }
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                window.scrollTo({
+                    top: targetSection.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Map filters
+        document.querySelectorAll('.map-control-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.map-control-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterMapMarkers(this.getAttribute('data-filter'));
+            });
+        });
+        
+        // EcoTracker form submission
+        document.getElementById('eco-report-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Simulate form submission with a delay
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            setTimeout(() => {
+                this.reset();
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Report';
+                document.getElementById('report-modal').style.display = 'flex';
+            }, 1500);
+        });
+        
+        // Modal close functionality
+        document.querySelector('.modal-close').addEventListener('click', function() {
+            document.getElementById('report-modal').style.display = 'none';
+        });
+        
+        document.getElementById('modal-ok').addEventListener('click', function() {
+            document.getElementById('report-modal').style.display = 'none';
+        });
+        
+        // Close modal if clicked outside
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('report-modal');
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+
+    // Map Initialization and Data
+    function initMap() {
+        // Create map centered on Ayusai Gorge
+        const map = L.map('map').setView([43.25, 77.02], 13);
+        
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Sample data for map markers
+        const locations = [
+            {
+                id: 1,
+                lat: 43.248,
+                lng: 77.013,
+                title: 'Deforestation Area',
+                description: 'Significant tree loss due to illegal logging activity detected in spring 2023.',
+                image: '/api/placeholder/300/200?text=Deforestation',
+                date: '2023-04-15',
+                type: 'anthropogenic',
+                period: '2020'
+            },
+            {
+                id: 2,
+                lat: 43.252,
+                lng: 77.025,
+                title: 'Rockslide',
+                description: 'Natural rockslide occurred after heavy rainfall, changing the topography of the eastern slope.',
+                image: '/api/placeholder/300/200?text=Rockslide',
+                date: '2024-08-10',
+                type: 'natural',
+                period: '2020'
+            },
+            {
+                id: 3,
+                lat: 43.245,
+                lng: 77.019,
+                title: 'New Hiking Trail',
+                description: 'Unofficial trail created by tourists, causing vegetation damage and soil compaction.',
+                image: '/api/placeholder/300/200?text=Hiking+Trail',
+                date: '2022-07-22',
+                type: 'anthropogenic',
+                period: '2020'
+            },
+            {
+                id: 4,
+                lat: 43.258,
+                lng: 77.018,
+                title: 'River Bank Erosion',
+                description: 'Significant natural erosion of the river bank due to high water levels during spring melt.',
+                image: '/api/placeholder/300/200?text=River+Erosion',
+                date: '2023-04-30',
+                type: 'natural',
+                period: '2020'
+            },
+            {
+                id: 5,
+                lat: 43.251,
+                lng: 77.009,
+                title: 'Trash Dump Site',
+                description: 'Illegal dumping of household waste discovered by researchers.',
+                image: '/api/placeholder/300/200?text=Trash+Dump',
+                date: '2024-03-15',
+                type: 'anthropogenic',
+                period: '2020'
+            },
+            {
+                id: 6,
+                lat: 43.242,
+                lng: 77.023,
+                title: 'Landslide Area',
+                description: 'Natural landslide occurred in 2018 after a period of heavy rainfall.',
+                image: '/api/placeholder/300/200?text=Landslide',
+                date: '2018-05-20',
+                type: 'natural',
+                period: '2015'
+            },
+            {
+                id: 7,
+                lat: 43.257,
+                lng: 77.011,
+                title: 'Abandoned Construction',
+                description: 'Partially built tourist facility abandoned in 2017, materials still present.',
+                image: '/api/placeholder/300/200?text=Construction',
+                date: '2017-09-10',
+                type: 'anthropogenic',
+                period: '2015'
+            },
+            {
+                id: 8,
+                lat: 43.249,
+                lng: 77.028,
+                title: 'Vegetation Recovery',
+                description: 'Natural regrowth of native vegetation in previously disturbed area.',
+                image: '/api/placeholder/300/200?text=Vegetation',
+                date: '2019-06-30',
+                type: 'natural',
+                period: '2015'
+            },
+            {
+                id: 9,
+                lat: 43.246,
+                lng: 77.007,
+                title: 'Cliff Collapse',
+                description: 'Major cliff face collapse from natural weathering processes documented in 2013.',
+                image: '/api/placeholder/300/200?text=Cliff+Collapse',
+                date: '2013-10-17',
+                type: 'natural',
+                period: '2010'
+            },
+            {
+                id: 10,
+                lat: 43.259,
+                lng: 77.022,
+                title: 'Old Mining Site',
+                description: 'Small-scale mining operation active from 2011-2014, now abandoned but signs remain.',
+                image: '/api/placeholder/300/200?text=Mining+Site',
+                date: '2014-12-05',
+                type: 'anthropogenic',
+                period: '2010'
+            }
+        ];
+        
+        // Create marker groups
+        const markerGroups = {
+            all: L.layerGroup(),
+            natural: L.layerGroup(),
+            anthropogenic: L.layerGroup(),
+            '2020': L.layerGroup(),
+            '2015': L.layerGroup(),
+            '2010': L.layerGroup()
+        };
+        
+        // Add markers to the map
+        locations.forEach(location => {
+            const markerIcon = L.divIcon({
+                className: `marker-${location.type}`,
+                html: '<i class="fas fa-map-pin"></i>',
+                iconSize: [20, 20]
+            });
+            
+            const popupContent = `
+                <div class="custom-popup">
+                    <span class="popup-tag ${location.type}">${location.type}</span>
+                    <img src="${location.image}" alt="${location.title}">
+                    <h3>${location.title}</h3>
+                    <p>${location.description}</p>
+                    <div class="popup-meta">
+                        <span><i class="fas fa-calendar"></i> ${new Date(location.date).toLocaleDateString()}</span>
+                        <span><i class="fas fa-map-marker-alt"></i> ${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}</span>
+                    </div>
+                </div>
+            `;
+            
+            const marker = L.marker([location.lat, location.lng], { icon: markerIcon })
+                .bindPopup(popupContent);
+            
+            // Add marker to appropriate groups
+            markerGroups.all.addLayer(marker);
+            markerGroups[location.type].addLayer(marker);
+            markerGroups[location.period].addLayer(marker);
+        });
+        
+        // Add the 'all' group to the map by default
+        markerGroups.all.addTo(map);
+        
+        // Store marker groups in global scope for filtering
+        window.markerGroups = markerGroups;
+        window.map = map;
+    }
+    
+    // Filter map markers based on selection
+    function filterMapMarkers(filter) {
+        const markerGroups = window.markerGroups;
+        const map = window.map;
+        
+        // Remove all marker groups from map
+        Object.values(markerGroups).forEach(group => {
+            map.removeLayer(group);
+        });
+        
+        // Add selected group to map
+        markerGroups[filter].addTo(map);
+    }
+
+    // Initialize charts for statistics section
+    function initCharts() {
+        // Impact types distribution chart (pie chart)
+        const impactCtx = document.getElementById('impactChart').getContext('2d');
+        const impactChart = new Chart(impactCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Natural Changes', 'Human Impact'],
+                datasets: [{
+                    data: [45, 55],
+                    backgroundColor: [
+                        '#76c893', // Natural
+                        '#ee9b00'  // Anthropogenic
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                return `${label}: ${value}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Changes over time chart (line chart)
+        const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+        const timelineChart = new Chart(timelineCtx, {
+            type: 'line',
+            data: {
+                labels: ['2010', '2012', '2014', '2016', '2018', '2020', '2022', '2024'],
+                datasets: [
+                    {
+                        label: 'Natural Changes',
+                        data: [8, 12, 15, 18, 20, 24, 28, 32],
+                        borderColor: '#76c893',
+                        backgroundColor: 'rgba(118, 200, 147, 0.2)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Human Impact',
+                        data: [5, 10, 18, 25, 30, 38, 45, 52],
+                        borderColor: '#ee9b00',
+                        backgroundColor: 'rgba(238, 155, 0, 0.2)',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Documented Changes'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Year'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+        
+        // Most affected areas chart (bar chart)
+        const areasCtx = document.getElementById('areasChart').getContext('2d');
+        const areasChart = new Chart(areasCtx, {
+            type: 'bar',
+            data: {
+                labels: ['North Ridge', 'River Valley', 'Central Basin', 'East Slope', 'South Entrance'],
+                datasets: [
+                    {
+                        label: 'Natural Changes',
+                        data: [12, 28, 15, 22, 8],
+                        backgroundColor: 'rgba(118, 200, 147, 0.7)'
+                    },
+                    {
+                        label: 'Human Impact',
+                        data: [18, 32, 25, 10, 23],
+                        backgroundColor: 'rgba(238, 155, 0, 0.7)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Documented Changes'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Area'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize comparison sliders for before & after section
+    function initComparisonSliders() {
+        const sliders = [
+            {
+                slider: document.getElementById('comparison-slider-1'),
+                handle: document.getElementById('slider-handle-1'),
+                before: document.querySelector('#comparison-slider-1 .comparison-item.before')
+            },
+            {
+                slider: document.getElementById('comparison-slider-2'),
+                handle: document.getElementById('slider-handle-2'),
+                before: document.querySelector('#comparison-slider-2 .comparison-item.before')
+            },
+            {
+                slider: document.getElementById('comparison-slider-3'),
+                handle: document.getElementById('slider-handle-3'),
+                before: document.querySelector('#comparison-slider-3 .comparison-item.before')
+            }
+        ];
+        
+        sliders.forEach(item => {
+            const slider = item.slider;
+            const handle = item.handle;
+            const before = item.before;
+            
+            let isDragging = false;
+            
+            // Mouse events
+            handle.addEventListener('mousedown', () => {
+                isDragging = true;
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const sliderRect = slider.getBoundingClientRect();
+                let position = (e.clientX - sliderRect.left) / sliderRect.width;
+                
+                // Constrain position between 0 and 1
+                position = Math.max(0, Math.min(1, position));
+                
+                // Update slider position
+                handle.style.left = `${position * 100}%`;
+                before.style.clipPath = `polygon(0 0, ${position * 100}% 0, ${position * 100}% 100%, 0 100%)`;
+            });
+            
+            // Touch events for mobile
+            handle.addEventListener('touchstart', () => {
+                isDragging = true;
+            });
+            
+            document.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                
+                const touch = e.touches[0];
+                const sliderRect = slider.getBoundingClientRect();
+                let position = (touch.clientX - sliderRect.left) / sliderRect.width;
+                
+                // Constrain position between 0 and 1
+                position = Math.max(0, Math.min(1, position));
+                
+                // Update slider position
+                handle.style.left = `${position * 100}%`;
+                before.style.clipPath = `polygon(0 0, ${position * 100}% 0, ${position * 100}% 100%, 0 100%)`;
+            });
+        });
+    }
+
+    // Initialize quiz functionality
+    function initQuiz() {
+      const quizData = [
+    {
+        question: "Which of the following is NOT a natural cause of erosion in the Ayusai Gorge?",
+        options: [
+            "Rainfall and water runoff",
+            "Wind erosion",
+            "Tourist hiking trails",
+            "Freeze-thaw cycles"
+        ],
+        correctAnswer: 2
+    },
+    {
+        question: "What percentage of documented changes in the Ayusai Gorge are human-induced?",
+        options: [
+            "25%",
+            "40%",
+            "55%",
+            "70%"
+        ],
+        correctAnswer: 2
+    },
+    {
+        question: "Which area of the Ayusai Gorge shows the highest level of natural changes?",
+        options: [
+            "North Ridge",
+            "River Valley",
+            "Central Basin",
+            "East Slope"
+        ],
+        correctAnswer: 1
+    },
+    {
+        question: "Which of these conservation efforts would be most effective in preserving the Ayusai Gorge ecosystem?",
+        options: [
+            "Building more tourist facilities",
+            "Establishing designated hiking trails",
+            "Increasing mining operations",
+            "Removing all visitor access"
+        ],
+        correctAnswer: 1
+    },
+    {
+        question: "What year did the Ayusai Gorge Research Project begin documenting changes?",
+        options: [
+            "2005",
+            "2010",
+            "2015",
+            "2020"
+        ],
+        correctAnswer: 1
+    },
+    {
+        question: "What is the primary purpose of the Ayusai Gorge Research Project?",
+        options: [
+            "Develop tourism",
+            "Monitor ecological changes",
+            "Expand agricultural land",
+            "Construct new roads"
+        ],
+        correctAnswer: 1
+    },
+    {
+        question: "Which species is most threatened by human activity in Ayusai Gorge?",
+        options: [
+            "Golden eagle",
+            "Mountain goat",
+            "Snow leopard",
+            "Alpine marmot"
+        ],
+        correctAnswer: 2
+    },
+    {
+        question: "How do freeze-thaw cycles contribute to erosion?",
+        options: [
+            "Melting snow covers plants",
+            "Ice expands and breaks rocks",
+            "Water evaporates quickly",
+            "Sunlight intensifies soil movement"
+        ],
+        correctAnswer: 1
+    },
+    {
+        question: "Which human activity is most responsible for vegetation loss in the gorge?",
+        options: [
+            "Picnicking",
+            "Littering",
+            "Unregulated hiking",
+            "Bird watching"
+        ],
+        correctAnswer: 2
+    },
+    {
+        question: "How often is data collected in the Ayusai Gorge Research Project?",
+        options: [
+            "Annually",
+            "Biannually",
+            "Monthly",
+            "Every five years"
+        ],
+        correctAnswer: 0
+    },
+    {
+        question: "Which organization funds the Ayusai Gorge Research Project?",
+        options: [
+            "World Bank",
+            "UNESCO",
+            "Kazakhstan Ministry of Ecology",
+            "WWF"
+        ],
+        correctAnswer: 2
+    },
+    {
+        question: "What natural feature is most studied in the Ayusai Gorge?",
+        options: [
+            "Waterfalls",
+            "Rock formations",
+            "Soil layers",
+            "River dynamics"
+        ],
+        correctAnswer: 3
+    },
+    {
+        question: "What is a common indicator of human impact in the area?",
+        options: [
+            "Increased vegetation",
+            "Trail widening",
+            "Animal migration",
+            "Snow accumulation"
+        ],
+        correctAnswer: 1
+    },
+    {
+        question: "Which method is used to track erosion in the gorge?",
+        options: [
+            "Drone mapping",
+            "Satellite imagery",
+            "On-ground sensors",
+            "All of the above"
+        ],
+        correctAnswer: 3
+    },
+    {
+        question: "Why are designated trails important for conservation?",
+        options: [
+            "They provide better photos",
+            "They limit damage to sensitive areas",
+            "They allow vehicle access",
+            "They mark property boundaries"
+        ],
+        correctAnswer: 1
+    },
+    {
+        question: "What is a freeze-thaw cycle in simple terms?",
+        options: [
+            "Snow melting into rivers",
+            "Water freezing and then melting repeatedly",
+            "Water boiling from sunlight",
+            "Dry soil absorbing rain"
+        ],
+        correctAnswer: 1
+    },
+    {
+        question: "Which season typically accelerates erosion in Ayusai Gorge?",
+        options: [
+            "Summer",
+            "Winter",
+            "Spring",
+            "Autumn"
+        ],
+        correctAnswer: 2
+    },
+    {
+        question: "Which of the following is an indirect effect of tourism?",
+        options: [
+            "Soil erosion",
+            "Littering",
+            "Noise pollution",
+            "All of the above"
+        ],
+        correctAnswer: 3
+    },
+    {
+        question: "What tool helps researchers track environmental change over time?",
+        options: [
+            "Binoculars",
+            "Time-lapse cameras",
+            "Maps",
+            "Measuring tape"
+        ],
+        correctAnswer: 1
+    },
+    {
+        question: "Which is a major concern for biodiversity in Ayusai Gorge?",
+        options: [
+            "Forest fires",
+            "Tourist waste",
+            "Urbanization",
+            "Logging"
+        ],
+        correctAnswer: 1
+    }
+];
+
+        
+        let currentQuestion = 0;
+        let selectedOption = null;
+        let answered = false;
+        
+        const questionElement = document.getElementById('quiz-question');
+        const optionsElement = document.getElementById('quiz-options');
+        const resultElement = document.getElementById('quiz-result');
+        const prevButton = document.getElementById('quiz-prev');
+        const nextButton = document.getElementById('quiz-next');
+        const checkButton = document.getElementById('quiz-check');
+        
+        // Load the initial question
+        loadQuestion(currentQuestion);
+        
+        // Event listeners for quiz navigation
+        prevButton.addEventListener('click', () => {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion(currentQuestion);
+                updateNavButtons();
+            }
+        });
+        
+        nextButton.addEventListener('click', () => {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                loadQuestion(currentQuestion);
+                updateNavButtons();
+            }
+        });
+        
+        checkButton.addEventListener('click', () => {
+            if (selectedOption === null) {
+                alert('Please select an answer before checking.');
+                return;
+            }
+            
+            if (!answered) {
+                checkAnswer();
+                answered = true;
+                checkButton.textContent = 'Next Question';
+            } else {
+                // Move to next question if there is one, otherwise reset
+                if (currentQuestion < quizData.length - 1) {
+                    currentQuestion++;
+                    loadQuestion(currentQuestion);
+                    updateNavButtons();
+                } else {
+                    alert('Quiz completed! You can restart to try again.');
+                    currentQuestion = 0;
+                    loadQuestion(currentQuestion);
+                    updateNavButtons();
+                }
+                answered = false;
+                checkButton.textContent = 'Check Answer';
+            }
+        });
+        
+        // Load question and options
+        function loadQuestion(index) {
+            const question = quizData[index];
+            questionElement.textContent = question.question;
+            
+            // Clear previous options and selection
+            optionsElement.innerHTML = '';
+            selectedOption = null;
+            resultElement.style.display = 'none';
+            
+            // Add new options
+            question.options.forEach((option, i) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'quiz-option';
+                optionDiv.textContent = option;
+                optionDiv.dataset.value = i;
+                
+                optionDiv.addEventListener('click', () => {
+                    // Remove selection from all options
+                    document.querySelectorAll('.quiz-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Select this option
+                    optionDiv.classList.add('selected');
+                    selectedOption = i;
+                });
+                
+                optionsElement.appendChild(optionDiv);
+            });
+        }
+        
+        // Check the selected answer
+        function checkAnswer() {
+            const correctAnswer = quizData[currentQuestion].correctAnswer;
+            
+            // Highlight correct and incorrect answers
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                const optionValue = parseInt(option.dataset.value);
+                
+                if (optionValue === correctAnswer) {
+                    option.classList.add('correct');
+                } else if (optionValue === selectedOption) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            // Show result message
+            resultElement.style.display = 'block';
+            if (selectedOption === correctAnswer) {
+                resultElement.textContent = 'Correct! Great job!';
+                resultElement.className = 'quiz-result correct';
+            } else {
+                resultElement.textContent = 'Incorrect. The correct answer is highlighted.';
+                resultElement.className = 'quiz-result incorrect';
+            }
+        }
+        
+        // Update navigation buttons state
+        function updateNavButtons() {
+            prevButton.disabled = currentQuestion === 0;
+            nextButton.disabled = currentQuestion === quizData.length - 1;
+        }
+    }
+    async function translatePage(targetLang) {
+  const elements = Array.from(document.body.querySelectorAll("*"));
+  
+  for (let el of elements) {
+    for (let node of el.childNodes) {
+      if (node.nodeType === 3 && node.textContent.trim() !== "") {
+        const originalText = node.textContent.trim();
+        
+        // Optional: Skip if already translated or cached
+        if (!originalText.match(/[a-zA-Zа-яА-ЯіІңҢөӨүҮқҚһҺғҒ]/)) continue;
+
+        try {
+          const translatedText = await translateText(originalText, "en", targetLang);
+          node.textContent = translatedText;
+        } catch (err) {
+          console.error("Translation error:", err);
+        }
+      }
+    }
+  }
+}
+</script>
+</body>
+</html>
